@@ -2,6 +2,7 @@ package com.aybaroud.springsecurityjwt.security.filters;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.aybaroud.springsecurityjwt.security.utils.JWTUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -42,17 +43,17 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         System.out.println("Successful authentication !");
         User user = (User) authResult.getPrincipal();
-        Algorithm algorithm = Algorithm.HMAC256("mySecret1234");
+        Algorithm algorithm = Algorithm.HMAC256(JWTUtil.SECRET);
         String jwtAccessToken = JWT.create()
                 .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis()+1*60*1000))    // Token available for 1 minute
+                .withExpiresAt(new Date(System.currentTimeMillis()+JWTUtil.EXPIRE_ACCESS_TOKEN))    // Token available for 1 minute
                 .withIssuer(request.getRequestURL().toString())
                 .withClaim("roles",user.getAuthorities().stream().map(ga->ga.getAuthority()).collect(Collectors.toList()))
                 .sign(algorithm);
 
         String jwtRefreshToken = JWT.create()
                 .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis()+15*60*1000))
+                .withExpiresAt(new Date(System.currentTimeMillis()+JWTUtil.EXPIRE_REFRESH_TOKEN))
                 .withIssuer(request.getRequestURL().toString())
                 .sign(algorithm);
 

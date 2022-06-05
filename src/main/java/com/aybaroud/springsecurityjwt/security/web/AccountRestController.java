@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -62,8 +63,13 @@ public class AccountRestController {
         );
     }
 
+    @GetMapping(path = "/getProfileUsername")
+    public AppUser getUserProfile(Principal principal){
+        return accountService.loadUserByUserName(principal.getName());
+    }
+
     @GetMapping(path = "/refreshToken")
-    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws Exception{
+    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String authorizationToken = request.getHeader("Authorization");
         if (authorizationToken != null && authorizationToken.startsWith("Bearer ")) {
             try {
@@ -77,7 +83,7 @@ public class AccountRestController {
 
                 String jwtAccessToken = JWT.create()
                         .withSubject(appUser.getUsername())
-                        .withExpiresAt(new Date(System.currentTimeMillis() + 1*60*1000))
+                        .withExpiresAt(new Date(System.currentTimeMillis() + 1 * 60 * 1000))
                         .withIssuer(request.getRequestURL().toString())
                         .withClaim("roles", appUser.getAppRoles().stream()
                                 .map(role -> role.getRoleName()).collect(Collectors.toList()))

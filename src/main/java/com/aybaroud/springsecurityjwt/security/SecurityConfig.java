@@ -31,25 +31,11 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private AccountService accountService;
+    private UserDetailsService userDetailsService;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(new UserDetailsService() {
-            @Override
-            public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-                AppUser appUser = accountService.loadUserByUserName(username);
-                Collection<GrantedAuthority> authorities = appUser.getAppRoles()
-                        .stream()
-                        .map(role->new SimpleGrantedAuthority(role.getRoleName()))
-                        .collect(Collectors.toList());
-                return new User(
-                        appUser.getUsername(),
-                        appUser.getPassword(),
-                        authorities
-                        );
-            }
-        });
+        auth.userDetailsService(userDetailsService);
     }
 
     @Override
