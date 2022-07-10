@@ -1,2 +1,2 @@
 # spring-security-jwt
-test jenkins
+test
