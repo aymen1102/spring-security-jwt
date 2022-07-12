@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 @SpringBootApplication
 @EnableGlobalMethodSecurity(prePostEnabled = true,securedEnabled = true)
-public clasAs SpringSecurityJwtApplication {
+public class SpringSecurityJwtApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SpringSecurityJwtApplication.class, args);
